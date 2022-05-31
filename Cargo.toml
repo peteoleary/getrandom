@@ -36,6 +36,7 @@ std = []
 rdrand = []
 # Feature to enable JavaScript bindings on wasm32-unknown-unknown
 js = ["wasm-bindgen", "js-sys"]
+noop = []
 # Feature to enable custom RNG implementations
 custom = []
 # Unstable feature to support being a libstd dependency
