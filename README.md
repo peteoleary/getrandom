@@ -15,6 +15,8 @@
 [License]: https://img.shields.io/crates/l/getrandom
 
 
+NOTE: this fork has a branch specifically for use in NEAR smart contracts. Please read https://github.com/peteoleary/getrandom/tree/2022-may-31-add-noop-feature#readme
+
 A Rust library for retrieving random data from (operating) system source. It is
 assumed that system always provides high-quality cryptographically secure random
 data, ideally backed by hardware entropy sources. This crate derives its name
