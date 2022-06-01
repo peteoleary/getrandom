@@ -14,6 +14,40 @@
 [LICENSE-MIT]: https://raw.githubusercontent.com/rust-random/getrandom/master/LICENSE-MIT
 [License]: https://img.shields.io/crates/l/getrandom
 
+## NEAR smart contract usuage
+
+This fork introduces a `noop` (short for "no operation") feature which, when enabled and used with a build target of `wasm32-unknown-unknown` does... NOTHING! Well, not exactly. Actually, what it does is stub out the low level `getrandom_inner` function to panic when called with a helpful message to that effect. Why is this? Well, the only other way for the `getrandom` to compile into WASM is to set the `js` flag instead which makes the crate rely on browser or Node.js Javascript calls to implement `getrandom_inner`. However, this code https://github.com/peteoleary/getrandom/blob/4b15c004f4169ad8ce0a61cf428106a48a921f08/src/js.rs#L26 seems to get called when the crate is instantiated which blows up your NEAR smart contract with a very unhelpful error:
+
+```
+{
+  "ActionError": {
+    "index": 3,
+    "kind": {
+      "FunctionCallError": {
+        "CompilationError": {
+          "PrepareError": "Instantiate"
+        }
+      }
+    }
+  }
+}
+```
+
+This means that if any crate you are pulling into your project relies on `rand` or `getrandom` it will blow up your contract. You will have to find a new crate to use or fork the crate and cut out the reliant code.
+
+Instead, just path `getrandom` and turn on the `noop` feature in your `Cargo.toml` file:
+
+```
+[patch.crates-io]
+getrandom = { git = "https://github.com/peteoleary/getrandom" }
+
+[dependencies]
+getrandom = { version="0.2.6", features = ["noop"] }
+```
+
+Your contract will (hopefully) instantiate without problem and your code won't blow up until it actually tries to get a random number at which point you will get an informative error message.
+
+## Back to our regularly scheduled program (crate)
 
 NOTE: this fork has a branch specifically for use in NEAR smart contracts. Please read https://github.com/peteoleary/getrandom/tree/2022-may-31-add-noop-feature#readme
 
